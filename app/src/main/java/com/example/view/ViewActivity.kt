@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.example.view.navigation.NavGraph
 
 class ViewActivity: ComponentActivity()
 {
@@ -67,7 +68,7 @@ fun BottomNavigationBar(navController: NavHostController) {
         val navBackStackEntry = navController.currentBackStackEntryAsState()
         val currentDestination = navBackStackEntry.value?.destination
 
-        BottomBarScreen.items.forEach { screen ->
+        Screen.bottomBarItems.forEach { screen ->
             val isSelected = currentDestination?.hierarchy?.any { it.route == screen.route } == true
             NavigationBarItem(
                 icon = {
