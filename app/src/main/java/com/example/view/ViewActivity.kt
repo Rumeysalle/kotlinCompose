@@ -72,6 +72,7 @@ fun BottomNavigationBar(navController: NavHostController) {
             val isSelected = currentDestination?.hierarchy?.any { it.route == screen.route } == true
             NavigationBarItem(
                 icon = {
+                    if (screen.icon != null)
                     Icon(
                         painter = painterResource(id = screen.icon),
                         contentDescription = screen.title,

@@ -16,11 +16,9 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -28,49 +26,58 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 
-
 @Composable
-fun MovieCard(movie: Movie,navController: NavController){
+fun MovieCard(movie: Movie, navController: NavController) {
+    ElevatedCard(
+        modifier = Modifier
+            .size(240.dp, 140.dp)
+            .padding(4.dp)
+            .clickable {
+                navController.navigate(Screen.MovieDetails.createRoute(movie.id))
+            },
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+        shape = RoundedCornerShape(8.dp)
+    ) {
+        Column {
+            if (movie.imageUrl != null) {
+                AsyncImage(
+                    model = movie.imageUrl,
+                    contentDescription = movie.title,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(
+                            Brush.verticalGradient(
+                                colors = listOf(
+                                    MaterialTheme.colorScheme.secondaryContainer,
+                                    MaterialTheme.colorScheme.secondaryContainer
+                                )
+                            )
+                        )
+                        .clickable {
+                            navController.navigate(Screen.MovieDetails.createRoute(movie.id))
+                        }
+                )
+            } else if (movie.placeholderResId != null) {
+                Image(
+                    painter = painterResource(id = movie.placeholderResId),
+                    contentDescription = movie.title,
+                    modifier = Modifier
+                        .height(150.dp)
+                        .fillMaxSize()
+                )
+            }
 
-   ElevatedCard(
-       modifier = Modifier
-           .size(240.dp, 140.dp)
-           .padding(4.dp)
-           .clickable { navController.navigate("movie_details/${movie.placeholderResId}") },
-       elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
-       shape = RoundedCornerShape(8.dp)
-   )
-   {
-       Column {if(movie.imageUrl != null)
-       {
-           AsyncImage(
-               model = movie.imageUrl,
-               contentDescription = movie.title,
-               contentScale = ContentScale.Crop,
-               modifier = Modifier
-                   .fillMaxSize()
-                   .clip(RoundedCornerShape(8.dp)).background(
-                       Brush.verticalGradient(colors = listOf(
-                           MaterialTheme.colorScheme.secondaryContainer,
-                           MaterialTheme.colorScheme.secondaryContainer))
-                   ).clickable { navController.navigate("movie_details/${movie.placeholderResId}") },
-           )
-       }
-        else if (movie.placeholderResId!=null){
-            Image(painter = painterResource(id =movie.placeholderResId),
-                contentDescription = movie.title,
-                modifier = Modifier.height(150.dp).fillMaxWidth())
-       }
-           Spacer(modifier = Modifier.height(6.dp))
+            Spacer(modifier = Modifier.height(6.dp))
 
-           Text(
-               text = movie.title,
-               modifier = Modifier.padding(start = 16.dp, end = 8.dp),
-               fontSize = 15.sp,
-               maxLines = 1,
-               style = MaterialTheme.typography.bodyLarge)
-
-
-       }
-}
+            Text(
+                text = movie.title,
+                modifier = Modifier.padding(start = 16.dp, end = 8.dp),
+                fontSize = 15.sp,
+                maxLines = 1,
+                style = MaterialTheme.typography.bodyLarge
+            )
+        }
+    }
 }
