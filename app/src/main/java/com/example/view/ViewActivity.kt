@@ -46,6 +46,7 @@ class ViewActivity: ComponentActivity()
 @Composable
 fun MainApp(){
     val navController= rememberNavController()
+
     Scaffold(
         bottomBar = {
             BottomNavigationBar(navController=navController)
