@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.view.R
+import com.example.view.screens.movieDetail.ChannelCards
 import com.example.view.screens.movieDetail.Movie
 import com.example.view.screens.movieDetail.MovieCard
 import com.example.view.screens.movieDetail.MovieDetails
@@ -66,12 +67,6 @@ fun HomeScreen(navController: NavController) {
         )
     )
 
-    // Sadece drawable ID listesi → trending section için
-    val trendingMovies = listOf(
-        R.drawable.memento,
-        R.drawable.esaretin_bedeli,
-        R.drawable.inception
-    )
 
     Scaffold(
         bottomBar = { /* TODO: BottomBar */ },
@@ -179,26 +174,10 @@ fun HomeScreen(navController: NavController) {
                                 color = Color.White, fontSize = 20.sp
                             )
                         )
-
-                        LazyRow(
-                            horizontalArrangement = Arrangement.spacedBy(16.dp),
-                            modifier = Modifier.padding(vertical = 4.dp)
-                        ) {
-                            items(trendingMovies) { movieRes ->
-                                ElevatedCard(
-                                    modifier = Modifier
-                                        .size(240.dp, 140.dp)
-                                        .padding(4.dp),
-                                    onClick = { /*TODO*/ },
-                                    elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
-                                ) {
-                                    // Burada sadece placeholder card var.
-                                }
                             }
+                    ChannelCards()
                         }
                     }
                 }
-            }
-        }
     }
 }

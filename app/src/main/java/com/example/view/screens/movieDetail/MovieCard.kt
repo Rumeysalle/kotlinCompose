@@ -3,6 +3,7 @@ package com.example.view.screens.movieDetail
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,6 +11,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -25,12 +28,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
+import com.example.view.R
 
 @Composable
 fun MovieCard(movie: Movie, navController: NavController) {
     ElevatedCard(
         modifier = Modifier
-            .size(240.dp, 140.dp)
+            .size(150.dp, 200.dp)
             .padding(4.dp)
             .clickable {
                 navController.navigate(Screen.MovieDetails.createRoute(movie.id))
@@ -79,5 +83,31 @@ fun MovieCard(movie: Movie, navController: NavController) {
                 style = MaterialTheme.typography.bodyLarge
             )
         }
+    }
+}
+@Composable
+fun ChannelCards(
+){
+    val trendingMovies = listOf(
+        R.drawable.memento,
+        R.drawable.esaretin_bedeli,
+        R.drawable.inception
+    )
+
+    LazyRow(
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = Modifier.padding(vertical = 4.dp)
+    ) {
+        items(trendingMovies) { movieRes ->
+            ElevatedCard(
+                modifier = Modifier
+                    .size(240.dp, 140.dp)
+                    .padding(4.dp),
+                onClick = { /*TODO*/ },
+                elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
+            ) {
+                // Burada sadece placeholder card var.
+            }
+}
     }
 }

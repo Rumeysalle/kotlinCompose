@@ -11,11 +11,11 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.view.screens.Downloads
 import com.example.view.screens.home.HomeScreen
-import com.example.view.screens.myList.MyList
 import com.example.view.screens.ProfileScreen
 import com.example.view.screens.movieDetail.Movie
 import com.example.view.screens.movieDetail.MovieDetailViewModel
 import com.example.view.screens.movieDetail.MovieDetails
+import com.example.view.screens.myList.MyList
 
 
 @Composable
@@ -31,7 +31,7 @@ fun NavGraph(
     )
     {
         composable(Screen.Home.route) { HomeScreen(navController) }
-        composable(Screen.Mylist.route) { MyList() }
+        composable(Screen.Mylist.route) { MyList(navController,viewModel()) }
         composable(Screen.Downloads.route) { Downloads() }
         composable(Screen.Profile.route) { ProfileScreen() }
         composable(Screen.MovieDetails.route,
