@@ -8,7 +8,9 @@ data class Movie(
     val title: String,
     val description: String,
     val imageUrl: String? = null,
-    val placeholderResId: Int? = null
+    val placeholderResId: Int?,
+    var isFavorite: Boolean = false
 ){
+
 
 }

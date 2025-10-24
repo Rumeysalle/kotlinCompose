@@ -1,3 +1,4 @@
+import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
@@ -20,12 +21,12 @@ sealed class Screen(
     val title: String,
     @DrawableRes val icon: Int? = null,
 ) {
-    object Home : Screen("home", "Home", R.drawable.home)
-    object Mylist : Screen("mylist", "Mylist", R.drawable.my_list)
-    object Downloads : Screen("downloads", "Downloads", R.drawable.download)
-    object Profile : Screen("profile", "Profile", R.drawable.profile)
+    data object Home : Screen("home", "Home", R.drawable.home)
+    data object Mylist : Screen("mylist", "Mylist", R.drawable.my_list)
+    data object Downloads : Screen("downloads", "Downloads", R.drawable.download)
+    data object Profile : Screen("profile", "Profile", R.drawable.profile)
 
-    object MovieDetails : Screen("movieDetail/{movieId}", "MovieDetail") {
+    data object MovieDetails : Screen("movieDetail/{movieId}", "MovieDetail") {
         fun createRoute(movieId: String) = "movieDetail/$movieId"
     }
 
@@ -44,6 +45,7 @@ fun BottomNavigationBar(navController: NavHostController) {
 
         Screen.bottomBarItems.forEach { screen ->
             val isSelected = currentDestination?.hierarchy?.any { it.route == screen.route } == true
+
             NavigationBarItem(
                 icon = {
                     if (screen.icon != null)
@@ -66,10 +68,11 @@ fun BottomNavigationBar(navController: NavHostController) {
                     navController.navigate(screen.route) {
 
                         popUpTo(navController.graph.startDestinationId) {
+                            inclusive = true
                             saveState = true
                         }
                         launchSingleTop = true
-                        restoreState = true
+                        restoreState = false
                     }
 
                 },

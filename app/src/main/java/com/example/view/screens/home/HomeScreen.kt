@@ -10,12 +10,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -25,48 +22,32 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.view.R
 import com.example.view.screens.movieDetail.ChannelCards
 import com.example.view.screens.movieDetail.Movie
 import com.example.view.screens.movieDetail.MovieCard
-import com.example.view.screens.movieDetail.MovieDetails
+
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "RememberReturnType")
 @Composable
-fun HomeScreen(navController: NavController) {
-
+fun HomeScreen(navController: NavController, homeViewModel: HomeViewModel) {
     val categories = listOf("All", "Series", "Movies", "Kids", "Documentaries", "Catch Up")
 
-    // Movie modelinden liste
-    val movies = listOf(
-        Movie(
-            id = "1",
-            title = "Memento",
-            description = "A man with short-term memory loss attempts to track down his wife's murderer.",
-            placeholderResId = R.drawable.memento
-        ),
-        Movie(
-            id = "2",
-            title = "Esaretin Bedeli",
-            description = "The story of a banker imprisoned for life for murder.",
-            placeholderResId = R.drawable.esaretin_bedeli
-        ),
-        Movie(
-            id = "3",
-            title = "Inception",
-            description = "A thief who steals corporate secrets through dreams.",
-            placeholderResId = R.drawable.inception
-        )
-    )
-
+    // ViewModeldan bilgileri al
+    val movieList by homeViewModel.movieList.collectAsState()
 
     Scaffold(
         bottomBar = { /* TODO: BottomBar */ },
@@ -147,8 +128,8 @@ fun HomeScreen(navController: NavController) {
                         horizontalArrangement = Arrangement.spacedBy(16.dp),
                         modifier = Modifier.padding(vertical = 4.dp)
                     ) {
-                        items(movies) { movie ->
-                            MovieCard( movie = movie , navController = navController)
+                        items(movieList) { movie ->
+                            MovieCard(movie = movie, navController = navController)
                         }
                     }
                 }

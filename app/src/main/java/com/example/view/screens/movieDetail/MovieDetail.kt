@@ -1,11 +1,9 @@
 package com.example.view.screens.movieDetail
 
-import android.util.Log
-import androidx.compose.foundation.BorderStroke
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -19,14 +17,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
@@ -41,22 +39,32 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
+
 import com.example.view.R
-import com.example.view.data.FavoriteLists
+
 import com.example.view.ui.theme.Gotham
-import androidx.compose.runtime.*
+
 
 
 @Composable
-fun MovieDetails(movie: Movie?,navController: NavController){
-    var isFavorite by remember { mutableStateOf(false) }
-Box(
-    modifier = Modifier.fillMaxSize(),
-    ) {
+fun MovieDetails(
+    movieId: String,
+    navController: NavController,
+    detailViewModel: DetailViewModel){
+
+    val movie by detailViewModel.selectedMovie.collectAsState()
+    val isFavorite by detailViewModel.isFavorite.collectAsState()
+
+    LaunchedEffect(movieId) {
+        detailViewModel.loadMovieById(movieId)
+    }
+
+    Box(modifier = Modifier.fillMaxSize(),)
+    {
     if (movie?.imageUrl != null) {
         AsyncImage(
-            model = movie.imageUrl,
-            contentDescription = movie.title,
+            model = movie!!.imageUrl,
+            contentDescription = movie!!.title,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(500.dp)
@@ -74,8 +82,8 @@ Box(
         )
     } else if (movie?.placeholderResId != null) {
         Image(
-            painter = painterResource(id = movie.placeholderResId),
-            contentDescription = movie.title,
+            painter = painterResource(id = movie?.placeholderResId ?: R.drawable.ic_launcher_background),
+                    contentDescription = movie!!.title,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(400.dp)
@@ -160,23 +168,29 @@ Box(
                )
 
                Spacer(modifier = Modifier.width(180.dp))
-               IconButton(
-                   onClick = {isFavorite=!isFavorite}
 
+               IconButton(
+                   onClick = {
+                       movie?.let { currentMovie ->
+                           detailViewModel.toggleFavorite(currentMovie.id)
+                       }
+                   }
                ) {
                    Icon(
-                      imageVector = if (isFavorite) Icons.Default.Done else Icons.Default.Add,
-                       contentDescription = null,
+                       imageVector = if (isFavorite) Icons.Default.Done else Icons.Default.Add,
+                       contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites",
                        tint = if (isFavorite) Color.Green else Color.White,
-                       modifier = Modifier.size(36.dp).clickable{ movie?.let { FavoriteLists.addMovie(it.id) }}
+                       modifier = Modifier.size(36.dp)
                    )
                }
+
+
                Spacer(modifier = Modifier.width(16.dp))
                Icon(
                    painter = painterResource(id = R.drawable.like),
                    contentDescription = "Like",
                    tint = Color.White,
-                   modifier = Modifier.size(36.dp).clickable{}
+                   modifier = Modifier.size(32.dp).clickable{}
                )
                Spacer(modifier = Modifier.width(16.dp))
                Icon(
