@@ -4,11 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.view.data.FavoriteManager // FavoriteManager'ı içe aktardık
 import com.example.view.data.Movies // Mevcut Movies data kaynağınız
+import com.example.view.domain.model.Movie
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class DetailViewModel : ViewModel() { // ViewModel artık herhangi bir bağımlılık almıyor
+class DetailViewModel : ViewModel() {
 
     // Ekranda gösterilecek tek filmi tutar
     private val _selectedMovie = MutableStateFlow<Movie?>(null)
@@ -55,17 +56,5 @@ class DetailViewModel : ViewModel() { // ViewModel artık herhangi bir bağıml�
         }
     }
 
-    // `addToFavorites` ve `removeFromFavorites` metodları artık toggleFavorite içinde yönetiliyor
-    // ve doğrudan FavoriteManager'ı çağırıyor. Bu yüzden bu eski metodlara artık ihtiyacımız yok.
-    /*
-    fun addToFavorites(movieId: String) {
-        // Bu metod artık kullanılmayacak, toggleFavorite yerine geçiyor
-    }
 
-    fun removeFromFavorites(movieId: String) {
-        // Bu metod artık kullanılmayacak, toggleFavorite yerine geçiyor
-    }
-    */
-
-    // sonrasında bölümler diziler burada tanımlanır
 }

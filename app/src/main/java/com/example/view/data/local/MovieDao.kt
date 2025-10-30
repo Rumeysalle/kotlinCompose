@@ -1,7 +1,6 @@
 package com.example.view.data.local
 
 import androidx.room.*
-import com.google.android.engage.video.datamodel.MovieEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao

@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.example.view.R
-
+import com.example.view.domain.model.Movie
 
 
 /**

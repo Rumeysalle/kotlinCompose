@@ -2,9 +2,8 @@ package com.example.view.screens.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.view.R
 import com.example.view.data.Movies
-import com.example.view.screens.movieDetail.Movie
+import com.example.view.domain.model.Movie
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch

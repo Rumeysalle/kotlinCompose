@@ -3,7 +3,7 @@ package com.example.view.screens.myList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.view.data.FavoriteManager
-import com.example.view.screens.movieDetail.Movie
+import com.example.view.domain.model.Movie
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
