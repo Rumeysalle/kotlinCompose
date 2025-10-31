@@ -1,41 +1,60 @@
 package com.example.view.data.remote.response
 
 import com.example.view.data.local.MovieEntity
+import com.google.gson.annotations.SerializedName
 
-
+// Tek film modeli
 data class MovieResponse(
+    @SerializedName("adult")
     val adult: Boolean,
-    val backdrop_path: String,
-    val genre_ids: List<Int>,
+
+    @SerializedName("backdrop_path")
+    val backdrop_path: String?,
+    @SerializedName("genre_ids")
+    val genre_ids: List<Int>?,
+    @SerializedName("id")
     val id: Int,
+    @SerializedName("original_language")
     val original_language: String,
+    @SerializedName("original_title")
     val original_title: String,
+    @SerializedName("overview")
     val overview: String,
+    @SerializedName("popularity")
     val popularity: Double,
-    val poster_path: String,
-    val release_date: String,
+    @SerializedName("poster_path")
+    val poster_path: String?,
+    @SerializedName("release_date")
+    val release_date: String?,
+    @SerializedName("title")
     val title: String,
+    @SerializedName("video")
     val video: Boolean,
+    @SerializedName("vote_average")
     val vote_average: Double,
+    @SerializedName("vote_count")
     val vote_count: Int
 )
 
+// Liste modeli (popülerler, favoriler, watchlist vs.)
+data class MovieListResponse(
+    @SerializedName("page")
+    val page: Int,
+    @SerializedName("results")
+    val results: List<MovieResponse>
+)
+
+
+
+// Entity dönüşümü
 fun MovieResponse.toEntity(): MovieEntity {
     return MovieEntity(
         id = id,
         title = title,
         overview = overview,
         posterUrl = "https://image.tmdb.org/t/p/w500$poster_path",
-        releaseDate = release_date,
+        releaseDate = release_date ?: "",
         rating = vote_average
     )
 }
-
-
-
-
-
-
-
-
 
