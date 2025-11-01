@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.ksp)
+    alias(libs.plugins.hilt.plugin)
+    kotlin("kapt")
 }
 
 android {
@@ -56,6 +58,8 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.retrofitConverterGson)
     implementation(libs.gson)
+    implementation(libs.hilt)
+    ksp(libs.hilt.compiler)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)

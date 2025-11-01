@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.navigation.compose.rememberNavController
 import com.example.view.ui.theme.ViewTheme
 import androidx.compose.ui.Modifier
+import com.example.view.data.remote.RetrofitInstance
 import com.example.view.navigation.NavGraph
 
 class ViewActivity: ComponentActivity()
