@@ -1,36 +1,58 @@
 package com.example.view.screens.movieDetail
 
+
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.view.data.FavoriteManager // FavoriteManager'ı içe aktardık
-import com.example.view.data.Movies // Mevcut Movies data kaynağınız
-import com.example.view.domain.model.Movie
+import com.example.view.data.local.toMovieDetail
+import com.example.view.data.remote.response.toDetailEntity
+import com.example.view.data.remote.response.toFavoriteList
+import com.example.view.domain.model.FavoriteList
+import com.example.view.domain.model.MovieDetail
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
+import java.io.IOException
+import androidx.lifecycle.SavedStateHandle
+import com.example.view.BuildConfig
+import com.example.view.domain.repository.MovieRepository
 
-class DetailViewModel : ViewModel() {
 
-    // Ekranda gösterilecek tek filmi tutar
-    private val _selectedMovie = MutableStateFlow<Movie?>(null)
-    val selectedMovie: StateFlow<Movie?> = _selectedMovie
+class DetailViewModel(
+ savedStateHandle: SavedStateHandle,
+ private val movieRepository: MovieRepository
+) : ViewModel() {
+    private val movieId: Int = savedStateHandle["movieId"] ?: 0
 
-    /**
-     * Favori filmleri Movie türünde tutan StateFlow artık doğrudan FavoriteManager'dan geliyor.
-     * Bu sayede, FavoriteManager güncellendiğinde buradaki favorites de otomatik olarak güncellenecek.
-     */
-    val favorites: StateFlow<List<Movie>> = FavoriteManager.favorites
+    private val _movieUiState = MutableStateFlow<MovieUiState>(MovieUiState.Loading)
+    val movieUiState: StateFlow<MovieUiState> = _movieUiState
 
-    // Seçilen filmin favori durumunu UI için ayrı tutabiliriz
     private val _isFavorite = MutableStateFlow(false)
     val isFavorite: StateFlow<Boolean> = _isFavorite
 
-    fun loadMovieById(movieId: String) {
+    init {
+        loadMovieById()
+    }
+
+    fun loadMovieById() {
         viewModelScope.launch {
-            val movie = Movies.movies.find { it.id == movieId }
-            _selectedMovie.value = movie
-            // Film yüklendiğinde, FavoriteManager'dan favori durumunu kontrol et
-            _isFavorite.value = FavoriteManager.isFavorite(movieId)
+            _movieUiState.value = MovieUiState.Loading
+
+            try {
+                val movieResult  = movieRepository.getMovieDetail(movieId = movieId, apiKey = BuildConfig.TMDB_API_KEY)
+                    .toDetailEntity()
+                    .toMovieDetail()
+                Log.d("DETAIL","GENRES: ${movieResult.genres}")
+                Log.d("DETAIL","MOVIE: ${movieResult}")
+
+                _movieUiState.value = MovieUiState.Success(movieDetail = movieResult)
+
+            } catch (e: IOException) {
+                _movieUiState.value = MovieUiState.Error
+            } catch (e: HttpException) {
+                _movieUiState.value = MovieUiState.Error
+            }
         }
     }
 
@@ -38,23 +60,27 @@ class DetailViewModel : ViewModel() {
      * Favoriye ekleme veya kaldırma işlemini tek bir fonksiyonda toplayalım.
      * FavoriteManager'ı kullanarak işlemi gerçekleştirir.
      */
-    fun toggleFavorite(movieId: String) {
+    fun toggleFavorite() {
         viewModelScope.launch {
-            val movie = Movies.movies.find { it.id == movieId }
+            _movieUiState.value = MovieUiState.Loading
 
-            movie?.let {
-                if (FavoriteManager.isFavorite(movieId)) {
-                    // Eğer favorilerdeyse, FavoriteManager'dan kaldır
-                    FavoriteManager.removeFavorite(movieId)
-                    _isFavorite.value = false // UI durumu güncelle
-                } else {
-                    // Favorilerde değilse, FavoriteManager'a ekle
-                    FavoriteManager.addFavorite(it)
-                    _isFavorite.value = true // UI durumu güncelle
-                }
+            try {
+                val listResult = movieRepository.getToggleFavoriteMovies(accountId = 1, sessionId = "").toFavoriteList()
+                _movieUiState.value = MovieUiState.Success(movieList = listResult)
+            } catch (e: IOException) {
+                _movieUiState.value = MovieUiState.Error
+            } catch (e: HttpException) {
+                _movieUiState.value = MovieUiState.Error
             }
         }
     }
 
 
+}
+sealed interface MovieUiState {
+    data class Success(
+        val movieList: FavoriteList? = null,
+        val movieDetail: MovieDetail? = null) : MovieUiState
+    data object Error : MovieUiState
+    data object Loading : MovieUiState
 }

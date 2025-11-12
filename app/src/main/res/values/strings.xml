@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">View</string>
+    <string name="category_now_playing">NOW PLAYING</string>
+    <string name="category_popular">POPULAR\n</string>
+    <string name="category_top_rated">TOP_RATED</string>
+    <string name="category_upcoming">UPCOMİNG\n</string>
 </resources>

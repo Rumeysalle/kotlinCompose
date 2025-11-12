@@ -16,7 +16,6 @@ coil = "3.0.0-alpha06"
 room = "2.8.2"
 ksp = "2.0.0-1.0.21"
 roomCommonJvm = "2.8.2"
-engageCore = "1.5.10"
 engageTv = "1.0.5"
 retrofit = "2.9.0"
 gson = "2.9.1"
@@ -49,7 +48,6 @@ androidx-foundation-layout-android = { group = "androidx.compose.foundation", na
 coil-compose      = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-network-ktor = { module = "io.coil-kt.coil3:coil-network-ktor", version.ref = "coil" }
 androidx-room-common-jvm = { group = "androidx.room", name = "room-common-jvm", version.ref = "roomCommonJvm" }
-engage-core = { group = "com.google.android.engage", name = "engage-core", version.ref = "engageCore" }
 engage-tv = { group = "com.google.android.engage", name = "engage-tv", version.ref = "engageTv" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 retrofitConverterGson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }

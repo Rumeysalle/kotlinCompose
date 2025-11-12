@@ -1,13 +1,15 @@
 package com.example.view.data.remote.response
 
 import com.example.view.data.local.MovieEntity
+import com.example.view.domain.model.Movie
+import com.example.view.domain.model.MovieList
+
 import com.google.gson.annotations.SerializedName
 
 // Tek film modeli
 data class MovieResponse(
     @SerializedName("adult")
     val adult: Boolean,
-
     @SerializedName("backdrop_path")
     val backdrop_path: String?,
     @SerializedName("genre_ids")
@@ -36,25 +38,21 @@ data class MovieResponse(
     val vote_count: Int
 )
 
-// Liste modeli (popülerler, favoriler, watchlist vs.)
-data class MovieListResponse(
-    @SerializedName("page")
-    val page: Int,
-    @SerializedName("results")
-    val results: List<MovieResponse>
-)
 
 
 
-// Entity dönüşümü
-fun MovieResponse.toEntity(): MovieEntity {
-    return MovieEntity(
+fun MovieResponse.toMovie(): Movie {
+    return Movie(
         id = id,
         title = title,
         overview = overview,
-        posterUrl = "https://image.tmdb.org/t/p/w500$poster_path",
+        posterUrl = "https://image.tmdb.org/t/p/w500${poster_path ?: ""}",
         releaseDate = release_date ?: "",
-        rating = vote_average
+        rating = vote_average,
+        isFavorite = false,
+        backdropPath = backdrop_path,
+        genreIds = genre_ids ?: emptyList()
     )
 }
+
 

@@ -6,7 +6,7 @@ plugins {
     alias(libs.plugins.hilt.plugin)
     kotlin("kapt")
 }
-
+val tmdbApiKey: String = project.findProperty("TMDB_API_KEY") as? String ?: ""
 android {
     namespace = "com.example.view"
     compileSdk = 35
@@ -17,7 +17,7 @@ android {
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
-
+        buildConfigField("String", "TMDB_API_KEY", "\"$tmdbApiKey\"")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -39,6 +39,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -53,12 +54,15 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.room.common.jvm)
-    implementation(libs.engage.core)
     implementation(libs.engage.tv)
     implementation(libs.retrofit)
     implementation(libs.retrofitConverterGson)
     implementation(libs.gson)
     implementation(libs.hilt)
+    implementation(libs.androidx.foundation.layout.android)
+    implementation(libs.androidx.foundation.layout.android)
+    implementation(libs.androidx.foundation.layout.android)
+    implementation(libs.androidx.foundation.layout.android)
     ksp(libs.hilt.compiler)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.ui)

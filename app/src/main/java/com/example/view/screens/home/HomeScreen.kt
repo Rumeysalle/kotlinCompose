@@ -1,18 +1,22 @@
 package com.example.view.screens.home
 
+import GenreUiState
+import HomeViewModel
+import MovieListUiState
 import android.annotation.SuppressLint
-import androidx.compose.foundation.background
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -32,19 +36,26 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.view.R
-import com.example.view.screens.movieDetail.ChannelCards
+
 import com.example.view.screens.movieDetail.MovieCard
 
 
-
 @OptIn(ExperimentalMaterial3Api::class)
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "RememberReturnType")
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun HomeScreen(navController: NavController, homeViewModel: HomeViewModel) {
-    val categories = listOf("All", "Series", "Movies", "Kids", "Documentaries", "Catch Up")
+fun HomeScreen(
+    navController: NavController,
+    homeViewModel: HomeViewModel,
+    ) {
+    // ViewModel'dan film listelerini al
+    val upcomingMoviesState by homeViewModel.upcomingMovies.collectAsState()
+    val topRatedMoviesState by homeViewModel.topRatedMovies.collectAsState()
+    val nowPlayingMoviesState by homeViewModel.nowPlayingMovies.collectAsState()
+    val popularMoviesState by homeViewModel.popularMovies.collectAsState()
+    val genresState by homeViewModel.genres.collectAsState()
+    val selectedGenre by homeViewModel.selectedGenre.collectAsState()
 
-    // ViewModeldan bilgileri al
-    val movieList by homeViewModel.movieList.collectAsState()
+
 
     Scaffold(
         bottomBar = { /* TODO: BottomBar */ },
@@ -56,7 +67,7 @@ fun HomeScreen(navController: NavController, homeViewModel: HomeViewModel) {
                     modifier = Modifier.fillMaxWidth(),
                     title = {
                         Text(
-                            text = "tabii",
+                            text = "izlee",
                             style = MaterialTheme.typography.bodyLarge.copy(
                                 color = Color.White,
                                 fontSize = 24.sp
@@ -77,21 +88,49 @@ fun HomeScreen(navController: NavController, homeViewModel: HomeViewModel) {
                     )
                 )
 
-                // Kategoriler
-                LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                ) {
-                    items(categories) { category ->
-                        Text(
-                            text = category,
-                            style = MaterialTheme.typography.bodyLarge.copy(
-                                color = Color.White, fontSize = 18.sp
-                            ),
-                            modifier = Modifier.background(color = Color(0xFF0F0E0E))
-                        )
-                    }
-                }
+         when (genresState){
+             is GenreUiState.Success -> {
+                 val genreList =(genresState as GenreUiState.Success).genres
+                 LazyRow (
+                     horizontalArrangement = Arrangement.spacedBy(8.dp),
+                     modifier = Modifier.padding(12.dp)
+                 ){
+                     item{
+                         GenreChip(
+                             text = "All",
+                             isSelected = selectedGenre == null,
+                             onClick = { homeViewModel.setSelectedGenre(null) }
+                         )
+                     }
+                     items(genreList) { genre ->
+                         GenreChip(
+                         text = genre.name,
+                             isSelected = selectedGenre == genre.id,
+                         onClick = { homeViewModel.setSelectedGenre(genre.id) }
+                         )
+                     }
+                 }
+             }
+
+             is GenreUiState.Loading -> {
+                 CircularProgressIndicator(modifier = Modifier.padding(8.dp),
+                     color = Color.White
+                 )
+             }
+             is GenreUiState.Error ->{
+                 CircularProgressIndicator(modifier = Modifier.padding(8.dp),
+                     color = Color.White
+                 )
+
+             }
+
+             else -> {
+                 CircularProgressIndicator(modifier = Modifier.padding(8.dp),
+                     color = Color.White
+                 )
+             }
+         }
+
             }
         }
     ) { innerPadding: PaddingValues ->
@@ -104,58 +143,105 @@ fun HomeScreen(navController: NavController, homeViewModel: HomeViewModel) {
         ) {
             LazyColumn(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
+                    .fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
 
-                // 🎬 Trending Movies (MovieCard ile gösterim)
+                // Upcoming Movies Section
                 item {
-                    Text(
-                        modifier = Modifier.padding(start = 8.dp, top = 8.dp),
-                        text = "Trending Movies",
-                        style = MaterialTheme.typography.bodyLarge.copy(
-                            color = Color.White, fontSize = 24.sp
-                        )
+                    MovieCategoryWithCards(
+                        title = "Upcoming Movies",
+                        movieListUiState = upcomingMoviesState,
+                        navController = navController,
                     )
-
-                    Spacer(modifier = Modifier.padding(4.dp))
-
-                    LazyRow(
-                        horizontalArrangement = Arrangement.spacedBy(16.dp),
-                        modifier = Modifier.padding(vertical = 4.dp)
-                    ) {
-                        items(movieList) { movie ->
-                            MovieCard(movie = movie, navController = navController)
-                        }
-                    }
                 }
 
-                // 📺 Live TV Section
+                // Top Rated Movies Section
                 item {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                    ) {
-                        Text(
-                            modifier = Modifier.padding(start = 8.dp, top = 8.dp),
-                            text = "Live TV > ",
-                            style = MaterialTheme.typography.bodyLarge.copy(
-                                color = Color.White, fontSize = 24.sp
-                            )
-                        )
-                        Spacer(modifier = Modifier.padding(4.dp))
+                    MovieCategoryWithCards(
+                        title = "Top Rated Movies",
+                        movieListUiState = topRatedMoviesState,
+                        navController = navController,
+                    )
+                }
 
-                        Text(
-                            modifier = Modifier.padding(start = 8.dp, top = 8.dp),
-                            text = "All Channels",
-                            style = MaterialTheme.typography.bodyLarge.copy(
-                                color = Color.White, fontSize = 20.sp
-                            )
-                        )
-                            }
-                    ChannelCards()
-                        }
+                // Now Playing Movies Section
+                item {
+                    MovieCategoryWithCards(
+                        title = "Now Playing Movies",
+                        movieListUiState = nowPlayingMoviesState,
+                        navController = navController,
+                    )
+                }
+
+                // Popular Movies Section
+                item {
+                    MovieCategoryWithCards(
+                        title = "Popular Movies",
+                        movieListUiState = popularMoviesState,
+                        navController = navController,
+                    )
+                }
+            }
+        }
+    }
+}
+
+
+@Composable
+fun MovieCategoryWithCards(
+    title: String,
+    movieListUiState: MovieListUiState,
+    navController: NavController,
+) {
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .padding(vertical = 8.dp)) {
+        Text(
+            modifier = Modifier.padding(start = 16.dp, bottom = 8.dp),
+            text = title,
+            style = MaterialTheme.typography.bodyLarge.copy(
+                color = Color.White, fontSize = 24.sp
+            )
+        )
+
+        when (val state = movieListUiState) {
+            is MovieListUiState.Loading -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(color = Color.White)
+                }
+            }
+            is MovieListUiState.Success -> {
+                LazyRow(
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    contentPadding = PaddingValues(horizontal = 16.dp)
+                ) {
+                    items(state.movieList.movies) { movie ->
+                        MovieCard(movie = movie, navController = navController)
                     }
                 }
+            }
+            is MovieListUiState.Error -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "Filmler yüklenirken bir hata oluştu.",
+                        color = Color.Red,
+                        fontSize = 16.sp
+                    )
+                }
+            }
+
+            else -> {}
+        }
     }
 }

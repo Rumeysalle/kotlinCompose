@@ -1,5 +1,7 @@
 package com.example.view.navigation
 
+import HomeViewModel
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -15,11 +17,9 @@ import androidx.navigation.navArgument
 import com.example.view.screens.Downloads
 import com.example.view.screens.ProfileScreen
 import com.example.view.screens.home.HomeScreen
-import com.example.view.screens.home.HomeViewModel
 import com.example.view.screens.movieDetail.DetailViewModel
 import com.example.view.screens.movieDetail.MovieDetails
-import com.example.view.screens.myList.MyList
-import com.example.view.screens.myList.MyListViewModel
+
 
 @Composable
 fun NavGraph(
@@ -42,29 +42,24 @@ fun NavGraph(
     ) {
         composable(Screen.Home.route) {
             val homeViewModel: HomeViewModel = viewModel()
-            HomeScreen(navController = navController,homeViewModel)
+            HomeScreen(navController = navController,homeViewModel )
         }
 
-        composable(Screen.Mylist.route) {
-            val myListViewModel: MyListViewModel = viewModel()
-            MyList(navController = navController,myListViewModel)
-        }
 
         composable(Screen.Downloads.route) { Downloads() }
 
         composable(Screen.Profile.route) { ProfileScreen() }
-
         composable(
-            route = Screen.MovieDetails.route,
-            arguments = listOf(navArgument("movieId") { type = NavType.StringType })
-        ) { backStackEntry ->
-            val movieId = backStackEntry.arguments?.getString("movieId") ?: ""
-            val detailViewModel: DetailViewModel = viewModel()
-            MovieDetails(
-                movieId = movieId,
-                navController = navController,
-                detailViewModel
+            route = "movieDetail/{movieId}",
+            arguments = listOf(
+                navArgument("movieId") { type = NavType.IntType },
             )
+        ) { backStackEntry ->
+            val viewModel: DetailViewModel = viewModel(
+                viewModelStoreOwner = backStackEntry
+            )
+            MovieDetails(navController, viewModel)
         }
+
     }
 }
