@@ -6,6 +6,9 @@ import com.example.view.domain.model.Genre
 import com.example.view.domain.model.Movie
 import com.example.view.domain.model.MovieList
 import com.example.view.domain.repository.MovieRepository
+import com.example.view.domain.usecase.getMovieUseCase.getNowPlayingUseCase
+import com.example.view.domain.usecase.getMovieUseCase.getPopularUseCase
+import com.example.view.domain.usecase.getMovieUseCase.getTopRatedUseCase
 import com.example.view.screens.MovieCategory
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -15,12 +18,18 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
+import javax.inject.Inject
 
-class HomeViewModel(private val movieRepository: MovieRepository) : ViewModel() {
+class HomeViewModel @Inject constructor(
+    private val getGenresUseCase: GetGenresUseCase,
+    private val getPopularUseCase: getPopularUseCase,
+    private val getTopRatedUseCase: getTopRatedUseCase,
+    private val getNowPlayingUseCase: getNowPlayingUseCase,
+    private val movieRepository: MovieRepository) : ViewModel() {
 
-    // CATEGORY STATE (senin orijinal yapın)
+    // CATEGORY STATE ()
     private val _upcomingMovies = MutableStateFlow<MovieListUiState>(MovieListUiState.Loading)
-    val upcomingMovies = _upcomingMovies
+    val upcomingMovies:StateFlow<MovieListUiState> = _upcomingMovies
 
     private val _topRatedMovies = MutableStateFlow<MovieListUiState>(MovieListUiState.Loading)
     val topRatedMovies = _topRatedMovies
@@ -45,7 +54,7 @@ class HomeViewModel(private val movieRepository: MovieRepository) : ViewModel() 
         loadGenres()
     }
 
-    // ---------------- GENRE LOAD ----------------
+    //
 
     private fun loadGenres(){
         viewModelScope.launch {
