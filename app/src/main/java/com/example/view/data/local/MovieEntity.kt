@@ -5,7 +5,7 @@ import com.example.view.data.remote.response.GenreResponse
 import com.example.view.domain.model.Genre
 import com.example.view.domain.model.Movie
 import com.example.view.domain.model.MovieDetail
-
+import java.util.Collections.emptyList
 
 
 @Entity(tableName = "movies")

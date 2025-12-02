@@ -5,6 +5,7 @@ import com.example.view.domain.model.Movie
 import com.example.view.domain.model.MovieList
 
 import com.google.gson.annotations.SerializedName
+import java.util.Collections.emptyList
 
 // Tek film modeli
 data class MovieResponse(
