@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
@@ -137,36 +138,40 @@ fun MovieDetails(
                             modifier = Modifier.padding(bottom = 8.dp)
                         )
                         Spacer(modifier = Modifier.height(8.dp))
-                    }
 
-                    // Derecelendirme, Yetişkin Bilgisi, Çalışma Süresi ve Türler
-                    item {
+
+                    // Derecelendirme, Tarih, Çalışma Süresi ve Türler
+
                         Column(modifier = Modifier.padding(bottom = 16.dp)) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
+                            // Üst Bilgi Satırı
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(16.dp) // Tüm öğeler arası 16dp
+                            ) {
                                 movie?.vote_average?.let { rating ->
                                     Text(
                                         text = String.format("%.1f", rating),
-                                        color = Color.Green, // Derecelendirme için farklı bir renk
+                                        color = Color.Green,
                                         style = TextStyle(
                                             fontFamily = Gotham,
                                             fontWeight = FontWeight.Bold,
                                             fontSize = 18.sp
-                                        ),
-                                        modifier = Modifier.padding(end = 16.dp)
+                                        )
                                     )
                                 }
-                               movie?.release_date?.let { release_date ->
-                                   Text(
-                                       text = release_date,
-                                       color = Color.White.copy(alpha = 0.7f),
-                                       style = TextStyle(
-                                           fontFamily = Gotham,
-                                           fontWeight = FontWeight.Medium,
-                                           fontSize = 16.sp
-                                       )
-                                   )
-                               }
-                                Spacer(modifier = Modifier.width(16.dp))
+
+                                movie?.release_date?.let { release_date ->
+                                    Text(
+                                        text = release_date,
+                                        color = Color.White.copy(alpha = 0.7f),
+                                        style = TextStyle(
+                                            fontFamily = Gotham,
+                                            fontWeight = FontWeight.Medium,
+                                            fontSize = 16.sp
+                                        )
+                                    )
+                                }
+
                                 movie?.runtime?.let { runtime ->
                                     Text(
                                         text = formatRuntime(runtime),
@@ -179,32 +184,36 @@ fun MovieDetails(
                                     )
                                 }
                             }
+
                             Spacer(modifier = Modifier.height(16.dp))
+
+                            // Türler Satırı
                             movie?.genres?.let { genres ->
                                 LazyRow(
                                     modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(16.dp)
+                                    horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(12.dp) // Türler arası boşluk
                                 ) {
-                                    item {
-                                        genres.forEach { genre ->
-                                            Text(
-                                                text = genre.name,
-                                                color = Color.White.copy(alpha = 0.7f),
-                                                style = TextStyle(
-                                                    fontFamily = Gotham,
-                                                    fontWeight = FontWeight.Medium,
-                                                    fontSize = 14.sp
-                                                ),
-                                                modifier = Modifier.padding(end = 16.dp)
-                                                    .background(Color.Gray.copy(alpha = 0.3f), shape = androidx.compose.foundation.shape.RoundedCornerShape(4.dp))
-                                                    .padding(horizontal = 8.dp, vertical = 2.dp)
-                                            )
-                                        }
+                                    items(genres) { genre ->
+                                        Text(
+                                            text = genre.name,
+                                            color = Color.White.copy(alpha = 0.7f),
+                                            style = TextStyle(
+                                                fontFamily = Gotham,
+                                                fontWeight = FontWeight.Medium,
+                                                fontSize = 14.sp
+                                            ),
+                                            modifier = Modifier
+                                                .background(
+                                                    color = Color.Gray.copy(alpha = 0.3f),
+                                                    shape = androidx.compose.foundation.shape.RoundedCornerShape(4.dp)
+                                                )
+                                                .padding(horizontal = 8.dp, vertical = 4.dp) // Kutunun içindeki yazı boşluğu
+                                        )
                                     }
 
-                                }
                             }
                         }
+                    }
                     }
 
                     item { Spacer(modifier = Modifier.height(24.dp)) }

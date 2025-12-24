@@ -1,5 +1,7 @@
 package com.example.view.domain.model
 
+import com.example.view.data.remote.response.MovieDetailResponse
+
 
 data class MovieDetail(
     val adult: Boolean,
@@ -15,3 +17,5 @@ data class MovieDetail(
     val title: String,
     val vote_average: Double
 )
+
+

@@ -1,40 +1,75 @@
 package com.example.view.data.repo
 
 import com.example.view.BuildConfig
-import com.example.view.data.remote.MovieApiService
-import com.example.view.data.remote.response.FavoriteResponse
-import com.example.view.data.remote.response.GenreResponse
-import com.example.view.data.remote.response.MovieDetailResponse
-import com.example.view.data.remote.response.MovieListResponse
-import com.example.view.domain.repository.MovieRepository
+import com.example.view.data.local.MovieDao
 
-class MovieRepositoryImpl(
-    private val movieApiService: MovieApiService
+import com.example.view.data.remote.MovieApiService
+import com.example.view.data.remote.response.MovieResponse
+import com.example.view.data.toDetailExternal
+import com.example.view.data.toExternal
+import com.example.view.data.toLocal
+import com.example.view.domain.model.Movie
+import com.example.view.domain.model.MovieDetail
+import com.example.view.domain.repository.MovieRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import javax.inject.Inject
+
+class MovieRepositoryImpl @Inject constructor(
+    private val movieApiService: MovieApiService,
+    private val dao: MovieDao
 ): MovieRepository {
 
-    override suspend fun getPopularMovies(page: Int): MovieListResponse{
-        return movieApiService.getPopularMovies(apiKey = BuildConfig.TMDB_API_KEY, page = page)
-    }
-    override suspend fun getTopRatedMovies(page: Int): MovieListResponse{
-        return movieApiService.getTopRatedMovies(apiKey = BuildConfig.TMDB_API_KEY,)
+    // Yardımcı fonksiyon: API'den gelen listeyi favori durumuyla işaretler
+    private suspend fun syncFavorites(apiMovies: List<MovieResponse>): List<Movie> {
+        // Veritabanındaki favori ID'leri çek
+        val favoriteIds = dao.getFavoriteMovieIds().toSet()
 
-    }
-    override suspend fun getUpcomingMovies(page: Int): MovieListResponse {
-        return movieApiService.getUpcomingMovies(apiKey = BuildConfig.TMDB_API_KEY,)
-    }
-    override suspend fun getNowPlayingMovies(page: Int): MovieListResponse {
-        return movieApiService.getNowPlayingMovies(apiKey = BuildConfig.TMDB_API_KEY,)
-    }
-
-    override suspend fun getGenres(apiKey: String): GenreResponse {
-        return movieApiService.getGenres(apiKey = apiKey)
-    }
-    override suspend fun getMovieDetail(movieId: Int, apiKey: String): MovieDetailResponse{
-        return movieApiService.getMovieDetail(movieId = movieId, apiKey = apiKey)
-    }
-    override suspend fun getToggleFavoriteMovies(accountId: Int, sessionId: String): FavoriteResponse{
-        return movieApiService.toggleFavoriteList(accountId = accountId, sessionId = sessionId)
+        // API'den gelen her filmi kontrol et
+        return apiMovies.map { response ->
+            val isFav = favoriteIds.contains(response.id)
+            // Önce Entity'ye çevir, sonra favori durumunu güncelle, en son Domain'e çevir
+            response.toLocal().copy(isFavorite = isFav).toExternal()
+        }
     }
 
+    override suspend fun getPopularMovies(page: Int): List<Movie> {
+        val response = movieApiService.getPopularMovies(BuildConfig.TMDB_API_KEY, page)
+        return syncFavorites(response.results)
+    }
+
+    override suspend fun getTopRatedMovies(page: Int): List<Movie> {
+        val response = movieApiService.getTopRatedMovies(BuildConfig.TMDB_API_KEY, page)
+        return syncFavorites(response.results)
+    }
+
+    override suspend fun getUpcomingMovies(page: Int): List<Movie> {
+        val response = movieApiService.getUpcomingMovies(BuildConfig.TMDB_API_KEY, page)
+        return syncFavorites(response.results)
+    }
+
+    override suspend fun getNowPlayingMovies(page: Int): List<Movie> {
+        val response = movieApiService.getNowPlayingMovies(BuildConfig.TMDB_API_KEY, page)
+        return syncFavorites(response.results)
+    }
+
+    override suspend fun insertFavorite(movie: Movie) {
+        dao.upsert(movie.toLocal(isFav = true))
+    }
+
+    override suspend fun deleteFavorite(movieId: Int) {
+        dao.deleteMovie(movieId)
+    }
+
+    override fun observeFavorites(): Flow<List<Movie>> {
+        return dao.observeFavorites().map { entityList ->
+            entityList.map { it.toExternal() }
+        }
+    }
+
+
+    override suspend fun getMovieDetail(movieId: Int, apiKey: String): MovieDetail {
+        val response = movieApiService.getMovieDetail(movieId = movieId, apiKey = apiKey)
+        return response.toDetailExternal()
+    }
 }
-

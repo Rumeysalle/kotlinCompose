@@ -24,7 +24,6 @@ class getPopularUseCase @Inject constructor(
             emit(Resource.Success(movie))
 
         } catch (e: HttpException) {
-            emit(Resource.Error<List<Movie>>(e.localizedMessage ?: "Bir hata oluştu"))
         } catch (e: IOException) {
             emit(Resource.Error<List<Movie>>("Sunucuya ulaşılamadı"))
         }

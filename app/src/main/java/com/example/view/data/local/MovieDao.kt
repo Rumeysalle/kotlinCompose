@@ -6,42 +6,32 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface MovieDao {
 
-    //  Yeni film ekleme veya güncelleme
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertMovie(movie: MovieEntity)
+    suspend fun upsert(movie: MovieLocal)
 
-    // Tüm filmleri getir (Flow kullanırsak UI otomatik güncellenir)
+
     @Query("SELECT * FROM movies ORDER BY id DESC")
-    fun getAllMovies(): Flow<List<MovieEntity>>
+    fun getAllMovies(): Flow<List<MovieLocal>>
 
-    // Belirli bir film ID’sine göre detay çekme
     @Query("SELECT * FROM movies WHERE id = :movieId")
-    suspend fun getMovieById(movieId: Int): MovieEntity?
-
-    // Favori filmleri listeleme
-    @Query("SELECT * FROM movies WHERE isFavorite = 1 ORDER BY id DESC")
-    fun getFavoriteMovies(): Flow<List<MovieEntity>>
-
-    //  Favori durumunu değiştirme (toggle gibi)
-    @Query("UPDATE movies SET isFavorite = :isFav WHERE id = :movieId")
-    suspend fun updateFavoriteStatus(movieId: Int, isFav: Boolean)
-
-    // Film silme
-    @Delete
-    suspend fun deleteMovie(movie: MovieEntity)
+    suspend fun getMovieById(movieId: Int): MovieLocal?
 
     // Başlığa göre film arama
     @Query("SELECT * FROM movies WHERE title LIKE '%' || :query || '%'")
-    fun searchMovies(query: String): Flow<List<MovieEntity>>
+    fun searchMovies(query: String): Flow<List<MovieLocal>>
 
-    // Filmleri başlığa veya tarihe göre sıralama
-    @Query(
-        """
-        SELECT * FROM movies
-        ORDER BY 
-        CASE WHEN :sortType = 'title' THEN title END ASC,
-        CASE WHEN :sortType = 'date' THEN id END DESC
-        """
-    )
-    fun sortMovies(sortType: String): Flow<List<MovieEntity>>
+
+    @Query("SELECT * FROM movies WHERE isFavorite = 1 ORDER BY updatedAt DESC")
+    fun observeFavorites(): Flow<List<MovieLocal>>
+
+    @Delete
+    suspend fun deleteMovie(movieId: Int)
+
+
+    @Query("SELECT EXISTS(SELECT 1 FROM movies WHERE id = :movieId AND isFavorite = 1)")
+    suspend fun isMovieFavorite(movieId: Int): Boolean
+
+    @Query("SELECT id FROM movies WHERE isFavorite = 1")
+    suspend fun getFavoriteMovieIds(): List<Int>
 }
+

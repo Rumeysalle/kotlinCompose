@@ -6,6 +6,11 @@ plugins {
     alias(libs.plugins.hilt.plugin)
     kotlin("kapt")
 }
+
+hilt {
+    enableAggregatingTask = false
+}
+
 val tmdbApiKey: String = project.findProperty("TMDB_API_KEY") as? String ?: ""
 android {
     namespace = "com.example.view"

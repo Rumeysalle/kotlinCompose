@@ -18,9 +18,15 @@ import androidx.navigation.compose.rememberNavController
 import com.example.view.ui.theme.ViewTheme
 import androidx.compose.ui.Modifier
 import com.example.view.navigation.NavGraph
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+
+@AndroidEntryPoint
 class ViewActivity: ComponentActivity()
 {
+    @Inject
+    lateinit var analytics: AnalyticsAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent{

@@ -1,15 +1,12 @@
 package com.example.view.data.remote
 
 
-import android.graphics.Region
-import com.example.view.data.local.MovieEntity
-import com.example.view.data.remote.response.FavoriteResponse
+
 import com.example.view.data.remote.response.GenreResponse
 import com.example.view.data.remote.response.MovieDetailResponse
 import com.example.view.data.remote.response.MovieListResponse
-import com.example.view.data.remote.response.MovieResponse
+import com.example.view.data.remote.response.MovieVideosResponse
 import retrofit2.http.GET
-import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -39,20 +36,6 @@ interface MovieApiService {
         @Query("page") page: Int = 1
     ): MovieListResponse
 
-    // Favori filmler
-    @GET("account/{account_id}/favorite/movies")
-    suspend fun getFavoriteMovies(
-        @Path("account_id") accountId: Int,
-        @Query("page") page: Int = 1,
-        @Query("session_id") sessionId: String,
-        @Query("sort_by") sortBy: String = "created_at.asc"
-    ): MovieResponse
-
-    @POST("account/{account_id}/favorite")
-    suspend fun toggleFavoriteList(
-        @Path("account_id") accountId: Int,
-        @Query("session_id") sessionId: String,
-    ):FavoriteResponse
 
     // Tek film detayı
     @GET("movie/{movie_id}")
@@ -65,5 +48,12 @@ interface MovieApiService {
     suspend fun getGenres(
         @Query("api_key") apiKey: String
     ):GenreResponse
+
+
+    @GET("movie/{movie_id}/videos")
+    suspend fun getMovieVideos(
+        @Path("movie_id") movieId: Int,
+        @Query("api_key") apiKey: String
+    ): MovieVideosResponse
 
 }

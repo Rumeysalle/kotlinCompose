@@ -45,9 +45,7 @@ fun NavGraph(
             HomeScreen(navController = navController,homeViewModel )
         }
 
-
         composable(Screen.Downloads.route) { Downloads() }
-
         composable(Screen.Profile.route) { ProfileScreen() }
         composable(
             route = "movieDetail/{movieId}",

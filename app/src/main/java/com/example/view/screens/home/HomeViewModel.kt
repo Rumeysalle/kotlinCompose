@@ -1,160 +1,79 @@
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.view.BuildConfig
-import com.example.view.data.remote.response.toMovieList
-import com.example.view.domain.model.Genre
+import com.example.movieapp.domain.util.Resource
 import com.example.view.domain.model.Movie
-import com.example.view.domain.model.MovieList
-import com.example.view.domain.repository.MovieRepository
 import com.example.view.domain.usecase.getMovieUseCase.getNowPlayingUseCase
 import com.example.view.domain.usecase.getMovieUseCase.getPopularUseCase
 import com.example.view.domain.usecase.getMovieUseCase.getTopRatedUseCase
-import com.example.view.screens.MovieCategory
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.stateIn
+import com.example.view.domain.usecase.getMovieUseCase.getUpcomingUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import retrofit2.HttpException
-import java.io.IOException
 import javax.inject.Inject
 
+@HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val getGenresUseCase: GetGenresUseCase,
-    private val getPopularUseCase: getPopularUseCase,
+    private val getUpcomingUseCase: getUpcomingUseCase,
     private val getTopRatedUseCase: getTopRatedUseCase,
     private val getNowPlayingUseCase: getNowPlayingUseCase,
-    private val movieRepository: MovieRepository) : ViewModel() {
+    private val getPopularUseCase: getPopularUseCase,
+) : ViewModel() {
 
-    // CATEGORY STATE ()
+
+
     private val _upcomingMovies = MutableStateFlow<MovieListUiState>(MovieListUiState.Loading)
-    val upcomingMovies:StateFlow<MovieListUiState> = _upcomingMovies
+    val upcomingMovies: StateFlow<MovieListUiState> = _upcomingMovies
 
     private val _topRatedMovies = MutableStateFlow<MovieListUiState>(MovieListUiState.Loading)
-    val topRatedMovies = _topRatedMovies
+    val topRatedMovies: StateFlow<MovieListUiState> = _topRatedMovies
 
     private val _nowPlayingMovies = MutableStateFlow<MovieListUiState>(MovieListUiState.Loading)
-    val nowPlayingMovies = _nowPlayingMovies
+    val nowPlayingMovies: StateFlow<MovieListUiState> = _nowPlayingMovies
 
     private val _popularMovies = MutableStateFlow<MovieListUiState>(MovieListUiState.Loading)
-    val popularMovies = _popularMovies
-
-    // Genre için ayrı UI STATE
-    private val _genres = MutableStateFlow<GenreUiState>(GenreUiState.Loading)
-    val genres: StateFlow<GenreUiState> = _genres
-
-    // seçili genre
-    private val _selectedGenre = MutableStateFlow<Int?>(null)
-    val selectedGenre: StateFlow<Int?> = _selectedGenre
+    val popularMovies: StateFlow<MovieListUiState> = _popularMovies
 
 
     init {
-        loadAllMovieCategories()
-        loadGenres()
+        loadAllData()
     }
 
-    //
+    private fun loadAllData() {
+        fetchMovies(getUpcomingUseCase(page = 1), _upcomingMovies)
+        fetchMovies(getTopRatedUseCase(page = 1), _topRatedMovies)
+        fetchMovies(getNowPlayingUseCase(page = 1), _nowPlayingMovies)
+        fetchMovies(getPopularUseCase(page = 1), _popularMovies)
+    }
 
-    private fun loadGenres(){
+    // GENERIC
+    // Her kategori için ayrı fonksiyon yazmak yerine tek bir generic fonksiyon
+    private fun fetchMovies(
+        flow: Flow<Resource<List<Movie>>>,
+        targetState: MutableStateFlow<MovieListUiState>
+    ) {
         viewModelScope.launch {
-            _genres.value = GenreUiState.Loading
-
-            try {
-                val response = movieRepository.getGenres(apiKey = BuildConfig.TMDB_API_KEY)
-
-                val genreList = response.genres
-                    .map { Genre(it.id, it.name) }
-                    .sortedBy { it.name }
-
-                _genres.value = GenreUiState.Success(genreList)
-
-            } catch (e: IOException) {
-                _genres.value = GenreUiState.Error
-            } catch (e: HttpException) {
-                _genres.value = GenreUiState.Error
-            }
-        }
-    }
-
-    // ---------------- MOVIE LOAD ----------------
-
-    private fun loadAllMovieCategories() {
-        loadMovies(MovieCategory.UPCOMING)
-        loadMovies(MovieCategory.TOP_RATED)
-        loadMovies(MovieCategory.NOW_PLAYING)
-        loadMovies(MovieCategory.POPULAR)
-    }
-
-    private fun loadMovies(category: MovieCategory, page: Int = 1) {
-        viewModelScope.launch {
-
-            val targetStateFlow = when (category) {
-                MovieCategory.UPCOMING -> _upcomingMovies
-                MovieCategory.TOP_RATED -> _topRatedMovies
-                MovieCategory.NOW_PLAYING -> _nowPlayingMovies
-                MovieCategory.POPULAR -> _popularMovies
-            }
-
-            targetStateFlow.value = MovieListUiState.Loading
-
-            try {
-                val movieListResponse = when (category) {
-                    MovieCategory.UPCOMING ->
-                        movieRepository.getPopularMovies(page)
-
-                    MovieCategory.TOP_RATED ->
-                    movieRepository.getTopRatedMovies(page)
-
-                    MovieCategory.NOW_PLAYING ->
-                    movieRepository.getNowPlayingMovies(page)
-
-                    MovieCategory.POPULAR ->
-                     movieRepository.getPopularMovies(page)
+            flow.collect { result ->
+                when (result) {
+                    is Resource.Loading -> {
+                        targetState.value = MovieListUiState.Loading
+                    }
+                    is Resource.Success -> {
+                        // UseCase zaten List<Movie> döndürüyor
+                        targetState.value = MovieListUiState.Success(result.data ?: emptyList())
+                    }
+                    is Resource.Error -> {
+                        targetState.value = MovieListUiState.Error(result.message ?: "Bilinmeyen hata")
+                    }
                 }
-
-                targetStateFlow.value = MovieListUiState.Success(movieListResponse.toMovieList())
-
-            } catch (e: IOException) {
-                targetStateFlow.value = MovieListUiState.Error
-            } catch (e: HttpException) {
-                targetStateFlow.value = MovieListUiState.Error
             }
         }
     }
 
-    // ------------ GENRE SELECT ---------------
 
-    fun setSelectedGenre(id: Int?) {
-        _selectedGenre.value = id
-    }
-
-    // -------- FILTERED MOVIES (TopBar için liste) ----------
-
-    val filteredMovies: StateFlow<List<Movie>> =
-        combine(popularMovies, selectedGenre) { popularState, genreId ->
-
-            if (popularState !is MovieListUiState.Success) return@combine emptyList()
-
-            val movies = popularState.movieList.movies
-
-            if (genreId == null) movies
-            else movies.filter { it.genreIds.contains(genreId) }
-
-        }.stateIn(
-            viewModelScope,
-            SharingStarted.Eagerly,
-            emptyList()
-        )
 }
+
 sealed interface MovieListUiState {
-    data class Success(val movieList: MovieList) : MovieListUiState
-    data object Error : MovieListUiState
     data object Loading : MovieListUiState
-}
-
-sealed interface GenreUiState {
-    data class Success(val genres: List<Genre>) : GenreUiState
-    data object Loading : GenreUiState
-    data object Error : GenreUiState
+    data class Success(val movies: List<Movie>) : MovieListUiState
+    data class Error(val message: String) : MovieListUiState
 }

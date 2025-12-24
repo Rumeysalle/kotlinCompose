@@ -1,9 +1,8 @@
 package com.example.view.data.remote.response
 
-import com.example.view.data.local.MovieDetailEntity
-import com.example.view.domain.model.FavoriteList
+
+
 import com.example.view.domain.model.Genre
-import com.example.view.domain.model.MovieList
 import com.google.gson.annotations.SerializedName
 
 data class MovieDetailResponse(
@@ -57,53 +56,18 @@ data class MovieDetailResponse(
 data class MovieListResponse(
     @SerializedName("page")
     val page: Int,
-
     @SerializedName("results")
     val results: List<MovieResponse>,
-
     @SerializedName("total_pages")
     val totalPages: Int,
-
     @SerializedName("total_results")
     val totalResults: Int
 )
 
-// Favorilere ekleme veya çıkarma işlemi için kullanılan sınıf
-data class FavoriteResponse(
-    @SerializedName("status_code")
-    val statusCode: Int,
-    @SerializedName("status_message")
-    val statusMessage: String
-)
-
-fun MovieListResponse.toMovieList(): MovieList {
-    return MovieList(
-        page = page,
-        movies = results.map { it.toMovie() },
-        totalPages = totalPages,
-        totalResults = totalResults
-    )
-}
 
 
-fun MovieDetailResponse.toDetailEntity(): MovieDetailEntity {
-    return MovieDetailEntity(
-        id = id,
-        title = title,
-        overview = overview,
-        posterUrl = "https://image.tmdb.org/t/p/w500$poster_path",
-        releaseDate = release_date,
-        runtime = runtime,
-        rating = vote_average,
-        genres = genres,
-        isFavorite = false,
-        adult = adult,
-    )
-}
 
-fun FavoriteResponse.toFavoriteList(): FavoriteList {
-    return FavoriteList(
-        isSuccess = statusCode == 1,
-        message = statusMessage
-    )
-}
+
+
+
+

@@ -1,18 +1,28 @@
 package com.example.view.domain.repository
 
-import com.example.view.data.remote.response.FavoriteResponse
-import com.example.view.data.remote.response.GenreResponse
-import com.example.view.data.remote.response.MovieDetailResponse
-import com.example.view.data.remote.response.MovieListResponse
+
+
+import com.example.view.domain.model.Movie
+import com.example.view.domain.model.MovieDetail
+import kotlinx.coroutines.flow.Flow
 
 interface MovieRepository {
-    suspend fun getPopularMovies(page: Int): MovieListResponse
-    suspend fun getTopRatedMovies(page: Int): MovieListResponse
-    suspend fun getUpcomingMovies(page: Int): MovieListResponse
-    suspend fun getNowPlayingMovies(page: Int): MovieListResponse
-    suspend fun getGenres(apiKey: String): GenreResponse
-    suspend fun getMovieDetail(movieId: Int, apiKey: String): MovieDetailResponse
-    suspend fun getToggleFavoriteMovies(accountId: Int, sessionId: String): FavoriteResponse
+
+    fun observeFavorites(): Flow<List<Movie>>
+
+    suspend fun insertFavorite(movie: Movie)
+
+    suspend fun deleteFavorite(movieId: Int)
+
+    suspend fun getPopularMovies(page: Int): List<Movie>
+
+    suspend fun getTopRatedMovies(page: Int): List<Movie>
+
+    suspend fun getUpcomingMovies(page: Int): List<Movie>
+
+    suspend fun getNowPlayingMovies(page: Int): List<Movie>
+
+    suspend fun getMovieDetail(movieId: Int, apiKey: String): MovieDetail
 }
 
 

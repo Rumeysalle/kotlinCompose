@@ -1,10 +1,9 @@
 package com.example.view.screens.home
 
-import GenreUiState
+
 import HomeViewModel
 import MovieListUiState
 import android.annotation.SuppressLint
-
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -52,8 +51,6 @@ fun HomeScreen(
     val topRatedMoviesState by homeViewModel.topRatedMovies.collectAsState()
     val nowPlayingMoviesState by homeViewModel.nowPlayingMovies.collectAsState()
     val popularMoviesState by homeViewModel.popularMovies.collectAsState()
-    val genresState by homeViewModel.genres.collectAsState()
-    val selectedGenre by homeViewModel.selectedGenre.collectAsState()
 
 
 
@@ -87,49 +84,6 @@ fun HomeScreen(
                         containerColor = Color(0xFF0F0E0E)
                     )
                 )
-
-         when (genresState){
-             is GenreUiState.Success -> {
-                 val genreList =(genresState as GenreUiState.Success).genres
-                 LazyRow (
-                     horizontalArrangement = Arrangement.spacedBy(8.dp),
-                     modifier = Modifier.padding(12.dp)
-                 ){
-                     item{
-                         GenreChip(
-                             text = "All",
-                             isSelected = selectedGenre == null,
-                             onClick = { homeViewModel.setSelectedGenre(null) }
-                         )
-                     }
-                     items(genreList) { genre ->
-                         GenreChip(
-                         text = genre.name,
-                             isSelected = selectedGenre == genre.id,
-                         onClick = { homeViewModel.setSelectedGenre(genre.id) }
-                         )
-                     }
-                 }
-             }
-
-             is GenreUiState.Loading -> {
-                 CircularProgressIndicator(modifier = Modifier.padding(8.dp),
-                     color = Color.White
-                 )
-             }
-             is GenreUiState.Error ->{
-                 CircularProgressIndicator(modifier = Modifier.padding(8.dp),
-                     color = Color.White
-                 )
-
-             }
-
-             else -> {
-                 CircularProgressIndicator(modifier = Modifier.padding(8.dp),
-                     color = Color.White
-                 )
-             }
-         }
 
             }
         }
@@ -221,7 +175,7 @@ fun MovieCategoryWithCards(
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                     contentPadding = PaddingValues(horizontal = 16.dp)
                 ) {
-                    items(state.movieList.movies) { movie ->
+                    items(state.movies) { movie ->
                         MovieCard(movie = movie, navController = navController)
                     }
                 }

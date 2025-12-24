@@ -1,11 +1,11 @@
 package com.example.view.data.remote.response
 
-import com.example.view.data.local.MovieEntity
-import com.example.view.domain.model.Movie
-import com.example.view.domain.model.MovieList
+
+
+import com.example.view.data.local.MovieLocal
 
 import com.google.gson.annotations.SerializedName
-import java.util.Collections.emptyList
+
 
 // Tek film modeli
 data class MovieResponse(
@@ -42,18 +42,6 @@ data class MovieResponse(
 
 
 
-fun MovieResponse.toMovie(): Movie {
-    return Movie(
-        id = id,
-        title = title,
-        overview = overview,
-        posterUrl = "https://image.tmdb.org/t/p/w500${poster_path ?: ""}",
-        releaseDate = release_date ?: "",
-        rating = vote_average,
-        isFavorite = false,
-        backdropPath = backdrop_path,
-        genreIds = genre_ids ?: emptyList()
-    )
-}
+
 
 
