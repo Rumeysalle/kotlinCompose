@@ -1,11 +1,15 @@
+
+package com.example.view.screens.home
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.movieapp.domain.util.Resource
 import com.example.view.domain.model.Movie
-import com.example.view.domain.usecase.getMovieUseCase.getNowPlayingUseCase
-import com.example.view.domain.usecase.getMovieUseCase.getPopularUseCase
-import com.example.view.domain.usecase.getMovieUseCase.getTopRatedUseCase
-import com.example.view.domain.usecase.getMovieUseCase.getUpcomingUseCase
+
+import com.example.view.domain.usecase.getMoviesUseCase.GetNowPlayingUseCase
+import com.example.view.domain.usecase.getMoviesUseCase.GetPopularUseCase
+import com.example.view.domain.usecase.getMoviesUseCase.GetTopRatedUseCase
+import com.example.view.domain.usecase.getMoviesUseCase.GetUpcomingUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -13,10 +17,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val getUpcomingUseCase: getUpcomingUseCase,
-    private val getTopRatedUseCase: getTopRatedUseCase,
-    private val getNowPlayingUseCase: getNowPlayingUseCase,
-    private val getPopularUseCase: getPopularUseCase,
+    private val getUpcomingUseCase: GetUpcomingUseCase,
+    private val getTopRatedUseCase: GetTopRatedUseCase,
+    private val getNowPlayingUseCase: GetNowPlayingUseCase,
+    private val getPopularUseCase: GetPopularUseCase,
 ) : ViewModel() {
 
 
@@ -58,7 +62,6 @@ class HomeViewModel @Inject constructor(
                         targetState.value = MovieListUiState.Loading
                     }
                     is Resource.Success -> {
-                        // UseCase zaten List<Movie> döndürüyor
                         targetState.value = MovieListUiState.Success(result.data ?: emptyList())
                     }
                     is Resource.Error -> {

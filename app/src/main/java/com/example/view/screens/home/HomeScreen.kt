@@ -1,8 +1,7 @@
 package com.example.view.screens.home
 
 
-import HomeViewModel
-import MovieListUiState
+
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box

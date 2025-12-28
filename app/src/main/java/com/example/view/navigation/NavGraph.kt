@@ -1,12 +1,9 @@
 package com.example.view.navigation
-
-import HomeViewModel
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -17,6 +14,7 @@ import androidx.navigation.navArgument
 import com.example.view.screens.Downloads
 import com.example.view.screens.ProfileScreen
 import com.example.view.screens.home.HomeScreen
+import com.example.view.screens.home.HomeViewModel
 import com.example.view.screens.movieDetail.DetailViewModel
 import com.example.view.screens.movieDetail.MovieDetails
 
@@ -41,7 +39,7 @@ fun NavGraph(
         modifier = modifier
     ) {
         composable(Screen.Home.route) {
-            val homeViewModel: HomeViewModel = viewModel()
+            val homeViewModel: HomeViewModel = hiltViewModel()
             HomeScreen(navController = navController,homeViewModel )
         }
 
@@ -53,9 +51,7 @@ fun NavGraph(
                 navArgument("movieId") { type = NavType.IntType },
             )
         ) { backStackEntry ->
-            val viewModel: DetailViewModel = viewModel(
-                viewModelStoreOwner = backStackEntry
-            )
+            val viewModel: DetailViewModel = hiltViewModel(viewModelStoreOwner = backStackEntry)
             MovieDetails(navController, viewModel)
         }
 

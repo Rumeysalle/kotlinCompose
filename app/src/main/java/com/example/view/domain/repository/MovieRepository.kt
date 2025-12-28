@@ -2,6 +2,7 @@ package com.example.view.domain.repository
 
 
 
+import com.example.movieapp.domain.util.Resource
 import com.example.view.domain.model.Movie
 import com.example.view.domain.model.MovieDetail
 import kotlinx.coroutines.flow.Flow

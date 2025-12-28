@@ -24,10 +24,8 @@ interface MovieDao {
     @Query("SELECT * FROM movies WHERE isFavorite = 1 ORDER BY updatedAt DESC")
     fun observeFavorites(): Flow<List<MovieLocal>>
 
-    @Delete
+    @Query("DELETE FROM movies WHERE id = :movieId")
     suspend fun deleteMovie(movieId: Int)
-
-
     @Query("SELECT EXISTS(SELECT 1 FROM movies WHERE id = :movieId AND isFavorite = 1)")
     suspend fun isMovieFavorite(movieId: Int): Boolean
 

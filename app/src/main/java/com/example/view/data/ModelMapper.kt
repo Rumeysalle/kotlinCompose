@@ -121,3 +121,15 @@ fun MovieDetailResponse.toDetailExternal() = MovieDetail(
     runtime = runtime,
     status = status,
 )
+
+fun MovieDetail.toMovie() = Movie (
+    id = id,
+    title = title,
+    overview = overview,
+    posterUrl = poster_path,
+    releaseDate = release_date,
+    rating = vote_average,
+    isFavorite = false,
+    backdropPath = "" ,
+    genreIds = Collections.emptyList()
+)

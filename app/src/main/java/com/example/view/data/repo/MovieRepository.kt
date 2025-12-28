@@ -1,5 +1,6 @@
 package com.example.view.data.repo
 
+import com.example.movieapp.domain.util.Resource
 import com.example.view.BuildConfig
 import com.example.view.data.local.MovieDao
 
@@ -20,15 +21,13 @@ class MovieRepositoryImpl @Inject constructor(
     private val dao: MovieDao
 ): MovieRepository {
 
-    // Yardımcı fonksiyon: API'den gelen listeyi favori durumuyla işaretler
+
     private suspend fun syncFavorites(apiMovies: List<MovieResponse>): List<Movie> {
-        // Veritabanındaki favori ID'leri çek
+
         val favoriteIds = dao.getFavoriteMovieIds().toSet()
 
-        // API'den gelen her filmi kontrol et
         return apiMovies.map { response ->
             val isFav = favoriteIds.contains(response.id)
-            // Önce Entity'ye çevir, sonra favori durumunu güncelle, en son Domain'e çevir
             response.toLocal().copy(isFavorite = isFav).toExternal()
         }
     }
@@ -43,12 +42,12 @@ class MovieRepositoryImpl @Inject constructor(
         return syncFavorites(response.results)
     }
 
-    override suspend fun getUpcomingMovies(page: Int): List<Movie> {
+    override suspend fun getUpcomingMovies(page: Int): List<Movie>  {
         val response = movieApiService.getUpcomingMovies(BuildConfig.TMDB_API_KEY, page)
         return syncFavorites(response.results)
     }
 
-    override suspend fun getNowPlayingMovies(page: Int): List<Movie> {
+    override suspend fun getNowPlayingMovies(page: Int): List<Movie>  {
         val response = movieApiService.getNowPlayingMovies(BuildConfig.TMDB_API_KEY, page)
         return syncFavorites(response.results)
     }

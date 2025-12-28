@@ -25,8 +25,6 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class ViewActivity: ComponentActivity()
 {
-    @Inject
-    lateinit var analytics: AnalyticsAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent{
@@ -56,7 +54,6 @@ fun MainApp(){
         paddingValues->
         NavGraph(navController=navController,
             modifier = Modifier.padding(paddingValues))
-
     }
 }
 

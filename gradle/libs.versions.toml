@@ -20,7 +20,7 @@ engageTv = "1.0.5"
 retrofit = "2.9.0"
 gson = "2.10.1"
 hilt = "2.48"
-
+hiltNavigationCompose="1.2.0"
 
 
 [libraries]
@@ -54,7 +54,7 @@ retrofitConverterGson = { module = "com.squareup.retrofit2:converter-gson", vers
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 hilt = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt" }
-
+androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

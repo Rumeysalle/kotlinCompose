@@ -49,7 +49,6 @@ fun MovieCard(
         shape = RoundedCornerShape(8.dp)
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
-            // posterUrl'in her zaman bir URL olacağı varsayıldığı için if bloğu kaldırıldı.
             AsyncImage(
                 model = movie.posterUrl,
                 contentDescription = movie.title,
@@ -65,7 +64,6 @@ fun MovieCard(
 
             Spacer(modifier = Modifier.height(6.dp))
 
-            // Film ismini gösteriyoruz
             Text(
                 text = movie.title,
                 modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 4.dp),
