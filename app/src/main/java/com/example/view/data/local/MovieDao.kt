@@ -26,6 +26,7 @@ interface MovieDao {
 
     @Query("DELETE FROM movies WHERE id = :movieId")
     suspend fun deleteMovie(movieId: Int)
+
     @Query("SELECT EXISTS(SELECT 1 FROM movies WHERE id = :movieId AND isFavorite = 1)")
     suspend fun isMovieFavorite(movieId: Int): Boolean
 

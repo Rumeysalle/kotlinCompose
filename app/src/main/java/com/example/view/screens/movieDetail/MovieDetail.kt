@@ -44,6 +44,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.compose.rememberNavController
 
 
 import com.example.view.R
@@ -54,7 +55,8 @@ import com.example.view.ui.theme.Gotham // Gotham stilinizin tanımlı olduğund
 @Composable
 fun MovieDetails(
     navController: NavController,
-    detailViewModel: DetailViewModel
+    detailViewModel: DetailViewModel,
+    onMovieClick: (String) -> Unit
 ) {
     val uiState = detailViewModel.movieUiState.collectAsStateWithLifecycle().value
     val isFavorite by detailViewModel.isFavorite.collectAsState()
@@ -82,7 +84,8 @@ fun MovieDetails(
                         movieDetail = uiState.movieDetail,
                         isFavorite = isFavorite,
                         onFavoriteClick = { detailViewModel.onFavoriteClicked(movieDetail = uiState.movieDetail) },
-                        onBackClick = { navController.popBackStack() }
+                        onBackClick = { navController.popBackStack() },
+                        navController = navController
                     )
                 }
             }
@@ -92,6 +95,7 @@ fun MovieDetails(
 
 @Composable
 fun DetailContent(
+    navController: NavController,
     movieDetail: MovieDetail,
     isFavorite:Boolean,
     onFavoriteClick: () -> Unit,
@@ -242,8 +246,11 @@ fun DetailContent(
                         tint = Color.White,
                         modifier = Modifier
                             .size(42.dp)
-                            .clickable { /* Handle play click */ }
+                            .clickable {
+                                navController.navigate("movie_player")
+                            }
                     )
+
 
                     Spacer(modifier = Modifier.weight(1f)) // Boşluk için weight kullanıldı
 

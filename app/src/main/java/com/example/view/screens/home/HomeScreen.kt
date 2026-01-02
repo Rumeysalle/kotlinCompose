@@ -44,6 +44,7 @@ import com.example.view.screens.movieDetail.MovieCard
 fun HomeScreen(
     navController: NavController,
     homeViewModel: HomeViewModel,
+    onMovieClick: (Int) -> Unit
     ) {
     // ViewModel'dan film listelerini al
     val upcomingMoviesState by homeViewModel.upcomingMovies.collectAsState()
@@ -105,7 +106,8 @@ fun HomeScreen(
                     MovieCategoryWithCards(
                         title = "Upcoming Movies",
                         movieListUiState = upcomingMoviesState,
-                        navController = navController,
+                        onMovieClick ={ id -> onMovieClick(id) }
+
                     )
                 }
 
@@ -114,7 +116,7 @@ fun HomeScreen(
                     MovieCategoryWithCards(
                         title = "Top Rated Movies",
                         movieListUiState = topRatedMoviesState,
-                        navController = navController,
+                        onMovieClick = { id -> onMovieClick(id) }
                     )
                 }
 
@@ -123,7 +125,7 @@ fun HomeScreen(
                     MovieCategoryWithCards(
                         title = "Now Playing Movies",
                         movieListUiState = nowPlayingMoviesState,
-                        navController = navController,
+                        onMovieClick = { id -> onMovieClick(id) }
                     )
                 }
 
@@ -132,7 +134,7 @@ fun HomeScreen(
                     MovieCategoryWithCards(
                         title = "Popular Movies",
                         movieListUiState = popularMoviesState,
-                        navController = navController,
+                        onMovieClick = { id -> onMovieClick(id) }
                     )
                 }
             }
@@ -145,7 +147,7 @@ fun HomeScreen(
 fun MovieCategoryWithCards(
     title: String,
     movieListUiState: MovieListUiState,
-    navController: NavController,
+    onMovieClick: (Int) -> Unit
 ) {
     Column(modifier = Modifier
         .fillMaxWidth()
@@ -175,7 +177,10 @@ fun MovieCategoryWithCards(
                     contentPadding = PaddingValues(horizontal = 16.dp)
                 ) {
                     items(state.movies) { movie ->
-                        MovieCard(movie = movie, navController = navController)
+                        MovieCard(
+                            movie = movie,
+                            onClick = { onMovieClick(movie.id) }
+                        )
                     }
                 }
             }

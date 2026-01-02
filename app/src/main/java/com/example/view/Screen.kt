@@ -1,4 +1,5 @@
-import android.util.Log
+package com.example.view
+
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
@@ -14,7 +15,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.example.view.R
 
 sealed class Screen(
     val route: String,
@@ -25,10 +25,8 @@ sealed class Screen(
     data object Mylist : Screen("mylist", "Mylist", R.drawable.my_list)
     data object Downloads : Screen("downloads", "Downloads", R.drawable.download)
     data object Profile : Screen("profile", "Profile", R.drawable.profile)
-
-    data object MovieDetails : Screen("movieDetail/{movieId}", "MovieDetail") {
-        fun createRoute(movieId: String) = "movieDetail/$movieId"
-    }
+    data object MovieDetails : Screen("movie_details/{movieId}", "MovieDetail")
+    data object MoviePlayer : Screen("movie_player", "MoviePlayer")
 
     companion object {
         val bottomBarItems = listOf(Home, Mylist, Downloads, Profile)
