@@ -48,9 +48,20 @@ fun NavGraph(
                 navController.navigate("movie_details/$movieId")
             } )
         }
-        composable(Screen.MoviePlayer.route) { MoviePlayerScreen(videoUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4") }
+
+        composable(route = "videoPlayer/{videoId}",
+            arguments = listOf(navArgument("videoId") { type = NavType.StringType })
+        ) {
+            currentNavBackStackEntry ->
+            val videoId = currentNavBackStackEntry.arguments?.getString("videoId") ?: ""
+            MoviePlayerScreen(videoId = videoId, onBackClick = { navController.popBackStack()
+            })
+        }
+
         composable(Screen.Downloads.route) { Downloads() }
-        composable(Screen.Mylist.route){
+
+        composable(Screen.Mylist.route)
+        {
             val viewModel: MyListViewModel = hiltViewModel()
             MyListScreen(
                 navController,
@@ -58,9 +69,10 @@ fun NavGraph(
                 onBack = { navController.popBackStack()},
                 onMovieClick = { movieId ->
                 navController.navigate("movie_details/$movieId")
-        } )
+                } )
         }
         composable(Screen.Profile.route) { ProfileScreen() }
+
         composable(
             Screen.MovieDetails.route,
             arguments = listOf(navArgument("movieId")
@@ -71,7 +83,9 @@ fun NavGraph(
                 MovieDetails(
                     navController,
                     viewModel,
-                    onMovieClick = {  navController.navigate("movie_player")})
+                    onMovieClick = {
+                        videoId ->
+                        navController.navigate("videoPlayer/$videoId")})
             }
 
     }

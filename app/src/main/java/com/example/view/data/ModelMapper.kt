@@ -4,9 +4,11 @@ import com.example.view.data.local.MovieLocal
 import com.example.view.data.remote.response.MovieDetailResponse
 import com.example.view.data.remote.response.MovieListResponse
 import com.example.view.data.remote.response.MovieResponse
+import com.example.view.data.remote.response.ResultResponse
 import com.example.view.domain.model.Movie
 import com.example.view.domain.model.MovieDetail
 import com.example.view.domain.model.MovieList
+import com.example.view.domain.model.MovieVideo
 import java.util.Collections
 
 /**
@@ -132,4 +134,12 @@ fun MovieDetail.toMovie() = Movie (
     isFavorite = false,
     backdropPath = "" ,
     genreIds = Collections.emptyList()
+)
+
+fun ResultResponse.toDomainVideo() = MovieVideo(
+    id = id,
+    key = key,
+    name = name,
+    site = site,
+    type = type
 )

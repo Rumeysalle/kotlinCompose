@@ -1,16 +1,17 @@
 package com.example.view.data.repo
 
-import com.example.movieapp.domain.util.Resource
 import com.example.view.BuildConfig
 import com.example.view.data.local.MovieDao
 
 import com.example.view.data.remote.MovieApiService
 import com.example.view.data.remote.response.MovieResponse
 import com.example.view.data.toDetailExternal
+import com.example.view.data.toDomainVideo
 import com.example.view.data.toExternal
 import com.example.view.data.toLocal
 import com.example.view.domain.model.Movie
 import com.example.view.domain.model.MovieDetail
+import com.example.view.domain.model.MovieVideo
 import com.example.view.domain.repository.MovieRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -70,5 +71,10 @@ class MovieRepositoryImpl @Inject constructor(
     override suspend fun getMovieDetail(movieId: Int, apiKey: String): MovieDetail {
         val response = movieApiService.getMovieDetail(movieId = movieId, apiKey = apiKey)
         return response.toDetailExternal()
+    }
+
+    override suspend fun getMovieVideos(movieId: Int, apiKey: String): List<MovieVideo>{
+        val response = movieApiService.getMovieVideos(movieId = movieId, apiKey = apiKey)
+        return response.results.map { it.toDomainVideo() }
     }
 }

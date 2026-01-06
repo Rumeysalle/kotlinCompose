@@ -55,5 +55,4 @@ interface MovieApiService {
         @Path("movie_id") movieId: Int,
         @Query("api_key") apiKey: String
     ): MovieVideosResponse
-
 }

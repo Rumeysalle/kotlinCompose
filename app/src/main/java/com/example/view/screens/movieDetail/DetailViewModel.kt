@@ -2,6 +2,8 @@ package com.example.view.screens.movieDetail
 
 
 
+import android.util.Log
+import androidx.compose.ui.platform.LocalGraphicsContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.view.domain.model.MovieDetail
@@ -44,7 +46,7 @@ class DetailViewModel @Inject constructor(
             _movieUiState.value = MovieUiState.Loading
 
             try {
-                val movieResult  = movieRepository.getMovieDetail(
+                val movieResult = movieRepository.getMovieDetail(
                     movieId = movieId,
                     apiKey = BuildConfig.TMDB_API_KEY
                 )
@@ -61,8 +63,7 @@ class DetailViewModel @Inject constructor(
 
     private fun observeFavorite() {
         viewModelScope.launch {
-            movieRepository.observeFavorites().collectLatest {
-                favorites ->
+            movieRepository.observeFavorites().collectLatest { favorites ->
                 _isFavorite.value = favorites.any { it.id == movieId }
             }
         }
@@ -72,18 +73,48 @@ class DetailViewModel @Inject constructor(
         viewModelScope.launch {
             if (_isFavorite.value) {
                 movieRepository.deleteFavorite(movieId)
-            }else{
+            } else {
                 movieRepository.insertFavorite(movieDetail.toMovie())
             }
 
-            }            }
+        }
+    }
 
+    fun onPlayClick(movieId: Int, onKeyReceived: (String) -> Unit) {
+        viewModelScope.launch {
+            try {
 
+                val videos = movieRepository.getMovieVideos(
+                    movieId = movieId,
+                    apiKey = BuildConfig.TMDB_API_KEY
+                )
 
+                val selectedVideo = videos.find { it.type == "Trailer" && it.site == "YouTube" }
+                    ?: videos.firstOrNull()
+
+                val key = selectedVideo?.key
+
+                if (key != null) {
+                    Log.d("PlayDebug", "Video key bulundu: $key")
+                    onKeyReceived(key)
+                } else {
+                    Log.d("PlayDebug", "Video listesi boş veya uygun video bulunamadı")
+                }
+
+            }
+            catch (e: IOException) {
+                Log.e("PlayDebug", "İnternet hatası: ${e.message}")
+            } catch (e: Exception) {
+                Log.e("PlayDebug", "Beklenmedik bir hata oluştu: ${e.message}")
+            }
+        }
+    }
 }
-sealed interface MovieUiState {
-    data class Success(
-        val movieDetail: MovieDetail) : MovieUiState
-    data object Error : MovieUiState
-    data object Loading : MovieUiState
-}
+    sealed interface MovieUiState {
+        data class Success(
+            val movieDetail: MovieDetail
+        ) : MovieUiState
+
+        data object Error : MovieUiState
+        data object Loading : MovieUiState
+    }

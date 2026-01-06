@@ -2,8 +2,10 @@ package com.example.view.screens.movieDetail
 
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,6 +30,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
@@ -85,7 +88,14 @@ fun MovieDetails(
                         isFavorite = isFavorite,
                         onFavoriteClick = { detailViewModel.onFavoriteClicked(movieDetail = uiState.movieDetail) },
                         onBackClick = { navController.popBackStack() },
-                        navController = navController
+                        navController = navController,
+                        onPlayClick = {
+                            videoId ->
+                            detailViewModel.onPlayClick(movieId = videoId){
+                                videoKey ->
+                                navController.navigate("videoPlayer/$videoKey")
+                            }
+                        }
                     )
                 }
             }
@@ -99,7 +109,8 @@ fun DetailContent(
     movieDetail: MovieDetail,
     isFavorite:Boolean,
     onFavoriteClick: () -> Unit,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onPlayClick: (Int) -> Unit
 ){
     Box(modifier = Modifier.fillMaxSize()){
         AsyncImage(
@@ -240,21 +251,22 @@ fun DetailContent(
 
             item {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.play),
-                        contentDescription = "Play",
-                        tint = Color.White,
-                        modifier = Modifier
-                            .size(42.dp)
-                            .clickable {
-                                navController.navigate("movie_player")
-                            }
-                    )
+                    IconButton(
+                        onClick = { onPlayClick(movieDetail.id) },
+                        modifier = Modifier.size(42.dp) // Dış çerçevenin boyutu
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.play),
+                            contentDescription = "Play",
+                            tint = Color.White,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
 
 
-                    Spacer(modifier = Modifier.weight(1f)) // Boşluk için weight kullanıldı
+                    Spacer(modifier = Modifier.weight(1f))
 
-                    IconButton(onClick =onFavoriteClick) {
+                    IconButton(onClick = onFavoriteClick) {
                         Icon(
                             imageVector = if (isFavorite) Icons.Default.Done else Icons.Default.Add,
                             contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites",
@@ -271,7 +283,9 @@ fun DetailContent(
                         tint = Color.White,
                         modifier = Modifier
                             .size(32.dp)
-                            .clickable { /* Handle like click */ }
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = LocalIndication.current,) {  }
                     )
                     Spacer(modifier = Modifier.width(16.dp))
                     Icon(
@@ -280,7 +294,10 @@ fun DetailContent(
                         tint = Color.White,
                         modifier = Modifier
                             .size(36.dp)
-                            .clickable { /* Handle share click */ }
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = LocalIndication.current,
+                            ) {  }
                     )
                     Spacer(modifier = Modifier.width(16.dp))
                 }

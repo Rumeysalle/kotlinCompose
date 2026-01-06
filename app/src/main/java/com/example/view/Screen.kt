@@ -26,7 +26,7 @@ sealed class Screen(
     data object Downloads : Screen("downloads", "Downloads", R.drawable.download)
     data object Profile : Screen("profile", "Profile", R.drawable.profile)
     data object MovieDetails : Screen("movie_details/{movieId}", "MovieDetail")
-    data object MoviePlayer : Screen("movie_player", "MoviePlayer")
+    data object MoviePlayer : Screen("videoPlayer/{videoId}", "MoviePlayer")
 
     companion object {
         val bottomBarItems = listOf(Home, Mylist, Downloads, Profile)
